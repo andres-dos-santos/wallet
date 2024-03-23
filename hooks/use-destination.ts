@@ -2,6 +2,8 @@ import { create } from 'zustand'
 
 export interface Destination {
   name: string
+  abbreviation: string
+  tag: string
 }
 
 interface Hook {
@@ -10,7 +12,7 @@ interface Hook {
 }
 
 export const useDestination = create<Hook>((hookSet) => ({
-  value: { name: 'ME' },
+  value: null,
   set(value) {
     return hookSet({
       value,

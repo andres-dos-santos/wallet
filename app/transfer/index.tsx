@@ -10,14 +10,20 @@ import {
 } from 'react-native'
 import { Link, useRouter } from 'expo-router'
 import { useState } from 'react'
-
-import { Button } from '@components/button'
-import { Flex } from '@components/flex'
-import { P } from '@components/p'
-import { useDestination } from 'hooks/use-destination'
-import { currency } from '@utils/currency'
+import * as Network from 'expo-network'
 import clsx from 'clsx'
-import { supabase } from '@data/supabase'
+import { useQueryClient } from '@tanstack/react-query'
+import { useAsyncStorage } from '@react-native-async-storage/async-storage'
+
+import { Button } from 'components/button'
+import { Flex } from 'components/flex'
+import { P } from 'components/p'
+
+import { useDestination } from 'hooks/use-destination'
+
+import { currency } from 'utils/currency'
+
+import { supabase } from 'data/supabase'
 
 const KEYBOARD_DATA = [
   '1',
@@ -35,34 +41,63 @@ const KEYBOARD_DATA = [
 ]
 
 export default function Transaction() {
-  // const params = useLocalSearchParams()
   const destination = useDestination()
   const router = useRouter()
+  const client = useQueryClient()
+
+  const { setItem, getItem } = useAsyncStorage('@wallet:offline-transfers')
 
   const [value, setValue] = useState<string | null>(null)
 
   async function handleSubmitTransfer(type: 'income' | 'outcome') {
     const amount = Number(value)
 
+    const { isConnected } = await Network.getNetworkStateAsync()
+
     const transfer = {
       received_by:
-        type === 'outcome' ? destination.value.name.slice(0, 2) : 'NU',
+        type === 'outcome'
+          ? destination.value
+            ? destination.value.name
+            : 'Mercado aleale'
+          : 'your account',
+      tag: destination.value ? destination.value.tag : null,
       provided_by: type === 'outcome' ? 'Nu account' : '',
       price: !isNaN(amount) && currency(amount),
       type,
       description: '',
     }
 
-    try {
-      // @ts-ignore
-      transfer.price = Number(transfer.price) * 100
+    // @ts-ignore
+    transfer.price = Number(transfer.price) * 100
 
-      await supabase.from('transactions').insert(transfer)
+    if (isConnected) {
+      try {
+        await supabase.from('transactions').insert(transfer)
 
-      router.back()
-    } catch (error) {
-      console.log(error)
+        await client.invalidateQueries({
+          queryKey: ['get-all-transaction-by-month'],
+        })
+      } catch (error) {
+        console.log(error)
+      }
     }
+
+    if (!isConnected) {
+      const transfers = await getItem()
+
+      await setItem(
+        JSON.stringify(
+          transfers ? [...JSON.parse(transfers), transfer] : [transfer],
+        ),
+      )
+    }
+
+    destination.set(null)
+
+    setValue(null)
+
+    router.push('/dashboard/')
   }
 
   return (

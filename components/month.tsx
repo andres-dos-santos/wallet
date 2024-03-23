@@ -10,6 +10,7 @@ import { white } from 'tailwindcss/colors'
 import { useCallback, useContext, useState } from 'react'
 
 import { P } from './p'
+
 import { MonthContext } from 'contexts/month'
 
 export function Month() {
@@ -30,7 +31,7 @@ export function Month() {
     <>
       <Pressable
         onPress={() => setVisible(true)}
-        className="h-8 px-3 rounded-full flex-row items-center bg-[#2e3035]"
+        className="h-10 px-5 rounded-full flex-row items-center bg-[#2e3035]"
       >
         <P className="font-inter-medium text-xs mr-1.5">{month}</P>
         <Ionicons name="chevron-down" color={white} />

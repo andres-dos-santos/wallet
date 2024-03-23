@@ -5,15 +5,15 @@ import { white } from 'tailwindcss/colors'
 import { useRouter } from 'expo-router'
 import { Ionicons } from '@expo/vector-icons'
 
-import { useDestination } from 'hooks/use-destination'
+import { Destination, useDestination } from 'hooks/use-destination'
 import { P } from 'components/p'
 
 export default function DestinationPage() {
   const router = useRouter()
   const destination = useDestination()
 
-  function handleSelectDestination(name: string) {
-    destination.set({ name })
+  function handleSelectDestination(arg: Destination) {
+    destination.set(arg)
 
     router.back()
   }
@@ -28,7 +28,7 @@ export default function DestinationPage() {
         </View>
 
         <View className="flex-1 items-center justify-center">
-          <P className="text-[13px] font-inter-medium">Select destination</P>
+          <P className="text-sm font-inter-regular">Select destination</P>
         </View>
 
         <View className="flex-1" />
@@ -37,11 +37,28 @@ export default function DestinationPage() {
       <FlatList
         contentContainerStyle={{ paddingHorizontal: 28, paddingTop: 50 }}
         data={[
-          { name: 'Mercado aleale', tag: 'alimentação' },
-          { name: 'Padaria de mb', tag: 'alimentação' },
+          { name: 'Mercado Aleale', tag: 'food' },
+          { name: 'Padaria de MB', tag: 'food' },
+          { name: 'Dentista Andryelle', tag: 'health' },
+          { name: 'Nutricionista Lidiane', tag: 'health' },
+          { name: 'Maiana Serpa Lanche', tag: 'food' },
+          { name: 'Bia Lanche', tag: 'food' },
+          { name: 'Cartão de Crédito', tag: 'credit card' },
+          { name: 'Mãe', tag: 'home' },
+          { name: 'Água', tag: 'bill' },
+          { name: 'Diego Barbeiro', tag: 'health' },
+          { name: 'Luz', tag: 'bill' },
         ]}
         renderItem={({ item }) => (
-          <Pressable onPress={() => handleSelectDestination(item.name)}>
+          <Pressable
+            onPress={() =>
+              handleSelectDestination({
+                abbreviation: item.name.slice(0, 2),
+                name: item.name,
+                tag: item.tag,
+              })
+            }
+          >
             <Flex className="mb-3">
               <View className="h-10 w-10 rounded-full bg-zinc-700 items-center justify-center mr-2.5">
                 <P className="font-inter-medium text-[10px] uppercase">
