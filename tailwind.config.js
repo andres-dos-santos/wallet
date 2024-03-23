@@ -4,13 +4,18 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        300: ['light'],
-        400: ['regular'],
-        500: ['medium'],
-        700: ['bold'],
-        'mono-regular': ['mono-regular'],
+        'inter-light': ['inter-light'],
+        'inter-regular': ['inter-regular'],
+        'inter-medium': ['inter-medium'],
+        'inter-bold': ['inter-bold'],
+
         'urbanist-light': ['urbanist-light'],
         'urbanist-regular': ['urbanist-regular'],
+        'urbanist-medium': ['urbanist-medium'],
+        'urbanist-semibold': ['urbanist-semibold'],
+        'urbanist-bold': ['urbanist-bold'],
+        'urbanist-extrabold': ['urbanist-extrabold'],
+        'urbanist-black': ['urbanist-black'],
       },
     },
   },
